@@ -186,7 +186,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
               colors: [Color(0xFFD4A017), Color(0xFFFFF3A0), Color(0xFFD4A017)],
             ).createShader(bounds),
             child: Text(
-              '⚔  MINDFUL QUEST',
+              '⚔  TODO RPG',
               style: GoogleFonts.dotGothic16(
                 color: Colors.white,
                 fontSize: 14,
