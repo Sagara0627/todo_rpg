@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Mindful Quest — ドット絵RPGタスク管理">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Mindful Quest">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <title>Mindful Quest ⚔</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      background-color: #080818;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  </style>
+
+  <script>
+    // ── 8-bit Web Audio sound engine ──────────────────────────────────────────
+    var _audioCtx = null;
+
+    function _getCtx() {
+      if (!_audioCtx) {
+        _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      // Resume if suspended (browser autoplay policy)
+      if (_audioCtx.state === 'suspended') _audioCtx.resume();
+      return _audioCtx;
+    }
+
+    function _note(ctx, freq, start, dur, type, vol) {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = type || 'square';
+      osc.frequency.setValueAtTime(freq, start);
+      gain.gain.setValueAtTime(vol || 0.14, start);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+      osc.start(start);
+      osc.stop(start + dur + 0.02);
+    }
+
+    function playRPGSound(type) {
+      try {
+        var ctx = _getCtx();
+        var t = ctx.currentTime;
+        if (type === 'complete') {
+          // rising fanfare
+          _note(ctx, 523, t,        0.09, 'square', 0.13);
+          _note(ctx, 659, t + 0.10, 0.09, 'square', 0.13);
+          _note(ctx, 784, t + 0.19, 0.09, 'square', 0.13);
+          _note(ctx, 1047,t + 0.28, 0.22, 'square', 0.15);
+        } else if (type === 'levelup') {
+          // triumphant level-up melody
+          var seq = [392, 523, 659, 784, 1047, 784, 1047, 1319];
+          for (var i = 0; i < seq.length; i++) {
+            _note(ctx, seq[i], t + i * 0.09, 0.10, 'square', 0.14);
+          }
+          _note(ctx, 1568, t + 0.80, 0.55, 'square', 0.15);
+        } else if (type === 'button') {
+          _note(ctx, 440, t, 0.06, 'square', 0.09);
+        } else if (type === 'add') {
+          _note(ctx, 330, t,        0.07, 'square', 0.11);
+          _note(ctx, 440, t + 0.08, 0.09, 'square', 0.11);
+        }
+      } catch (e) {
+        // audio not available — silently fail
+      }
+    }
+  </script>
+</head>
+<body>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
